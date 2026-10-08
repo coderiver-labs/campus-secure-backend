@@ -226,6 +226,7 @@ campus-secure-backend/
 ├── students/             # Student-related functionality
 ├── utils/                # Shared utilities
 │
+├── docs/                 # API Documentation
 ├── docker/               # Docker and infrastructure configuration
 ├── devtools/             # Development utilities
 ├── static/               # Static assets
@@ -239,6 +240,17 @@ campus-secure-backend/
 ├── uv.lock
 └── README.md
 ```
+---
+
+## 📖 API Documentation
+
+The API can be explored using the included Postman or Reqable collection.
+
+**Postman Collection:**  
+`docs/api/postman/Campus-Secure-Backend.postman_collection.json`
+
+**Reqable Collection:**  
+`docs/api/reqable/Campus-Secure-Backend.reqable_collection.json`
 
 ---
 
