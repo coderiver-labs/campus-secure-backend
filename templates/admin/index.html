@@ -1,0 +1,284 @@
+{% extends 'admin/base.html' %}
+{% load i18n static %}
+
+{% block title %}
+  {% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}
+{% endblock %}
+
+{# Do NOT override this block's content beyond the include below -- it is #}
+{# what keeps "Campus Secure Backend" + the logo visible on this page.    #}
+{% block branding %}
+  {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h1 class="text-2xl font-semibold text-font-important-light dark:text-font-important-dark">
+      {% trans "Campus Dashboard" %}
+    </h1>
+    <p class="mt-1 text-sm text-font-subtle-light dark:text-font-subtle-dark">
+      {% trans "Overview of students, staff, payments and academic activity." %}
+    </p>
+  </div>
+  <div class="flex items-center gap-2 rounded-default border border-base-200 bg-base-50 px-3 py-1.5 text-sm dark:border-base-700 dark:bg-base-900">
+    <span class="relative flex h-2 w-2">
+      <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+      <span class="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+    </span>
+    <span class="font-medium text-font-default-light dark:text-font-default-dark">{% trans "Live System" %}</span>
+  </div>
+</div>
+
+{# ============================== ROW 1 -- KPI CARDS ============================== #}
+
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  {% include "admin/dashboard/_kpi_card.html" with label=_("Total Users") value=total_users icon="group" %}
+  {% include "admin/dashboard/_kpi_card.html" with label=_("Total Students") value=total_students icon="school" %}
+  {% include "admin/dashboard/_kpi_card.html" with label=_("Total Teachers") value=total_teacher icon="person" %}
+  {% include "admin/dashboard/_kpi_card.html" with label=_("Total Staff") value=total_staff icon="badge" %}
+  {% include "admin/dashboard/_kpi_card.html" with label=_("Total Admin") value=total_admin icon="admin_panel_settings" %}
+  {% include "admin/dashboard/_kpi_card.html" with label=_("Active Classes") value=active_classes icon="meeting_room" %}
+  {% include "admin/dashboard/_kpi_card.html" with label=_("Total Revenue") value=total_revenue icon="payments" is_currency=True %}
+  {% include "admin/dashboard/_kpi_card.html" with label=_("Pending Payments") value=pending_payments icon="hourglass_empty" %}
+</div>
+
+
+{# ============================== ROW 2 -- ANALYTICS ============================== #}
+<div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
+  <div class="rounded-default border border-base-200 bg-base-50 p-5 dark:border-base-700 dark:bg-base-900 lg:col-span-2">
+    <h2 class="mb-4 text-sm font-semibold text-font-default-light dark:text-font-default-dark">
+      {% trans "Student Enrollment / User Growth" %}
+    </h2>
+    <div class="h-72">
+      <canvas id="enrollmentChart"></canvas>
+    </div>
+  </div>
+  <div class="rounded-default border border-base-200 bg-base-50 p-5 dark:border-base-700 dark:bg-base-900">
+    <h2 class="mb-4 text-sm font-semibold text-font-default-light dark:text-font-default-dark">
+      {% trans "User Role Distribution" %}
+    </h2>
+    <div class="h-72">
+      <canvas id="roleChart"></canvas>
+    </div>
+  </div>
+</div>
+
+{# ============================== ROW 3 -- FINANCIAL + ACADEMIC ============================== #}
+<div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
+  <div class="rounded-default border border-base-200 bg-base-50 p-5 dark:border-base-700 dark:bg-base-900 lg:col-span-2">
+    <h2 class="mb-4 text-sm font-semibold text-font-default-light dark:text-font-default-dark">
+      {% trans "Payment Overview" %}
+    </h2>
+    <div class="h-64">
+      <canvas id="paymentsChart"></canvas>
+    </div>
+  </div>
+  <div class="rounded-default border border-base-200 bg-base-50 p-5 dark:border-base-700 dark:bg-base-900">
+    <h2 class="mb-4 text-sm font-semibold text-font-default-light dark:text-font-default-dark">
+      {% trans "Upcoming Exams" %}
+    </h2>
+    <ul class="space-y-3">
+      {% for exam in upcoming_exams %}
+        <li class="flex items-center justify-between border-b border-base-100 pb-2 text-sm last:border-0 dark:border-base-800">
+          <div>
+            <p class="font-medium text-font-default-light dark:text-font-default-dark">{{ exam.title }}</p>
+            <p class="text-xs text-font-subtle-light dark:text-font-subtle-dark">{{ exam.subject }}</p>
+          </div>
+          <span class="text-xs text-font-subtle-light dark:text-font-subtle-dark">{{ exam.date|date:"M d" }}</span>
+        </li>
+      {% empty %}
+        <li class="text-sm text-font-subtle-light dark:text-font-subtle-dark">{% trans "No upcoming exams." %}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+{# ============================== ROW 4 -- RECENT ACTIVITY ============================== #}
+<div class="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+  <div class="rounded-default border border-base-200 bg-base-50 p-5 dark:border-base-700 dark:bg-base-900">
+    <h2 class="mb-4 text-sm font-semibold text-font-default-light dark:text-font-default-dark">
+      {% trans "Recent Registrations" %}
+    </h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b border-base-100 text-xs uppercase text-font-subtle-light dark:border-base-800 dark:text-font-subtle-dark">
+            <th class="py-2 pr-4">{% trans "Name" %}</th>
+            <th class="py-2 pr-4">{% trans "Email" %}</th>
+            <th class="py-2 pr-4">{% trans "Role" %}</th>
+            <th class="py-2">{% trans "Date" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reg in recent_registrations %}
+            <tr class="border-b border-base-100 dark:border-base-800">
+              <td class="py-2 pr-4 font-medium text-font-default-light dark:text-font-default-dark">{{ reg.name }}</td>
+              <td class="py-2 pr-4 text-font-subtle-light dark:text-font-subtle-dark">{{ reg.email }}</td>
+              <td class="py-2 pr-4 text-font-subtle-light dark:text-font-subtle-dark">{{ reg.role }}</td>
+              <td class="py-2 text-font-subtle-light dark:text-font-subtle-dark">{{ reg.date|date:"M d, Y" }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4" class="py-3 text-font-subtle-light dark:text-font-subtle-dark">{% trans "No recent registrations." %}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="rounded-default border border-base-200 bg-base-50 p-5 dark:border-base-700 dark:bg-base-900">
+    <h2 class="mb-4 text-sm font-semibold text-font-default-light dark:text-font-default-dark">
+      {% trans "Recent Payments" %}
+    </h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b border-base-100 text-xs uppercase text-font-subtle-light dark:border-base-800 dark:text-font-subtle-dark">
+            <th class="py-2 pr-4">{% trans "Student" %}</th>
+            <th class="py-2 pr-4">{% trans "Amount" %}</th>
+            <th class="py-2 pr-4">{% trans "Status" %}</th>
+            <th class="py-2">{% trans "Date" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pay in recent_payments %}
+            <tr class="border-b border-base-100 dark:border-base-800">
+              <td class="py-2 pr-4 font-medium text-font-default-light dark:text-font-default-dark">{{ pay.student }}</td>
+              <td class="py-2 pr-4 text-font-subtle-light dark:text-font-subtle-dark">{{ pay.amount }}</td>
+              <td class="py-2 pr-4">
+                <span class="rounded-full px-2 py-0.5 text-xs font-medium
+                  {% if pay.status == 'success' %}bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400
+                  {% elif pay.status == 'pending' %}bg-yellow-100 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400
+                  {% else %}bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400{% endif %}">
+                  {{ pay.status }}
+                </span>
+              </td>
+              <td class="py-2 text-font-subtle-light dark:text-font-subtle-dark">{{ pay.date|date:"M d, Y" }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4" class="py-3 text-font-subtle-light dark:text-font-subtle-dark">{% trans "No recent payments." %}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{# ============================== ROW 5 -- QUICK ACTIONS ============================== #}
+<div class="rounded-default border border-base-200 bg-base-50 p-5 dark:border-base-700 dark:bg-base-900">
+  <h2 class="mb-4 text-sm font-semibold text-font-default-light dark:text-font-default-dark">
+    {% trans "Quick Actions" %}
+  </h2>
+
+  <div class="flex flex-wrap gap-3">
+
+    <a href="{% url 'admin:accounts_studentprofile_add' %}"
+       class="rounded-default border border-base-200 bg-white px-3 py-2 text-sm font-medium text-font-default-light hover:bg-base-50 dark:border-base-700 dark:bg-base-800 dark:text-font-default-dark dark:hover:bg-base-700">
+        + {% trans "Add Student" %}
+    </a>
+
+    <a href="{% url 'admin:accounts_staffprofile_add' %}"
+       class="rounded-default border border-base-200 bg-white px-3 py-2 text-sm font-medium text-font-default-light hover:bg-base-50 dark:border-base-700 dark:bg-base-800 dark:text-font-default-dark dark:hover:bg-base-700">
+        + {% trans "Add Staff" %}
+    </a>
+
+    <a href="{% url 'admin:school_studentclass_add' %}"
+       class="rounded-default border border-base-200 bg-white px-3 py-2 text-sm font-medium text-font-default-light hover:bg-base-50 dark:border-base-700 dark:bg-base-800 dark:text-font-default-dark dark:hover:bg-base-700">
+        + {% trans "Add Class" %}
+    </a>
+
+    <a href="{% url 'admin:exams_exam_add' %}"
+       class="rounded-default border border-base-200 bg-white px-3 py-2 text-sm font-medium text-font-default-light hover:bg-base-50 dark:border-base-700 dark:bg-base-800 dark:text-font-default-dark dark:hover:bg-base-700">
+        + {% trans "Create Exam" %}
+    </a>
+
+    <a href="{% url 'admin:payment_feepayment_add' %}"
+       class="rounded-default bg-primary-600 px-3 py-2 text-sm font-medium text-white hover:bg-primary-700">
+        + {% trans "Record Payment" %}
+    </a>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  // Match chart colors to light/dark mode using Unfold's own dark-mode class on <html>.
+  const isDark = document.documentElement.classList.contains('dark');
+  const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? 'rgba(255,255,255,0.65)' : 'rgba(55,65,81,0.85)';
+  Chart.defaults.color = textColor;
+  Chart.defaults.borderColor = gridColor;
+
+  new Chart(document.getElementById('enrollmentChart'), {
+    type: 'line',
+    data: {
+      labels: {{ enrollment_labels|safe }},
+      datasets: [{
+        label: '{% trans "New students" %}',
+        data: {{ enrollment_data|safe }},
+        fill: true,
+        tension: 0.35,
+        borderColor: 'rgb(37, 99, 235)',
+        backgroundColor: 'rgba(37, 99, 235, 0.12)',
+        pointRadius: 3,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+    },
+  });
+
+
+
+
+  new Chart(document.getElementById('roleChart'), {
+    type: 'doughnut',
+    data: {
+      labels: {{ role_distribution_labels|safe }},
+      datasets: [{
+        data: {{ role_distribution_data|safe }},
+        backgroundColor: ['rgb(37, 99, 235)', 'rgb(16, 185, 129)', 'rgb(245, 158, 11)', 'rgb(169, 37, 235)',],
+        borderWidth: 0,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } },
+      cutout: '65%',
+    },
+  });
+
+
+  
+
+  new Chart(document.getElementById('paymentsChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ payments_labels|safe }},
+      datasets: [{
+        label: '{% trans "Payments" %}',
+        data: {{ payments_data|safe }},
+        backgroundColor: ['rgb(16, 185, 129)', 'rgb(245, 158, 11)', 'rgb(239, 68, 68)'],
+        borderRadius: 6,
+        maxBarThickness: 48,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+    },
+  });
+})();
+</script>
+{% endblock %}

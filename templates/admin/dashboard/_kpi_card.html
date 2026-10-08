@@ -1,0 +1,20 @@
+{% load i18n %}
+<div class="rounded-default border border-base-200 bg-base-50 p-4 dark:border-base-700 dark:bg-base-900">
+  <div class="flex items-start justify-between">
+    <div>
+      <p class="text-xs font-medium uppercase tracking-wide text-font-subtle-light dark:text-font-subtle-dark">
+        {{ label }}
+      </p>
+
+      <p class="mt-2 text-2xl font-semibold text-font-important-light dark:text-font-important-dark">
+        {% if is_currency %}${% endif %}{{ value }}
+      </p>
+    </div>
+
+    <span class="material-symbols-outlined rounded-default bg-base-200 p-2 text-base-700 dark:bg-base-800 dark:text-base-300">
+      {{ icon }}
+    </span>
+  </div>
+</div>
+
+

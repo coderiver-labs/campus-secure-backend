@@ -1,0 +1,35 @@
+# Environment / secrets
+.env
+.env.dev
+!.env.example
+
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+
+# Celery
+celerybeat-schedule.db
+celerybeat-schedule.db-shm
+celerybeat-schedule.db-wal
+
+# Static / media generated files
+staticfiles/
+media/
+
+# IDE / Editor
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

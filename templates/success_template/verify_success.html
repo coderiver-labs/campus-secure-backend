@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Account Verified</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:28px 0;background:#f5f7fa;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 6px 18px rgba(18,38,63,0.08);">
+            <!-- Header -->
+            <tr>
+              <td style="padding:20px 26px;border-bottom:1px solid #eef2f6;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:46px;height:46px;border-radius:8px;background:#0d6efd;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;">
+                    {{ site_initials|default:"S" }}
+                  </div>
+                  <div style="font-size:17px;color:#102a43;font-weight:600;">
+                    {{ site_name|default:"MySite" }}
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td style="padding:26px;">
+                <h2 style="margin:0 0 10px 0;font-size:20px;color:#102a43;">Account Created & Verified</h2>
+
+                <p style="margin:0 0 18px 0;color:#4b5968;line-height:1.5;">
+                  Hi {{ first_name|default:"User" }},<br/>
+                  Welcome — your account has been successfully created and your email address has been verified.
+                </p>
+
+                <p style="margin:0 0 18px 0;color:#4b5968;line-height:1.5;">
+                  You can now sign in and start using your account.
+                </p>
+
+                <div style="text-align:center;margin:18px 0;">
+                  <a href="{{ login_url|default:'#' }}" target="_blank" rel="noopener"
+                     style="display:inline-block;padding:12px 24px;border-radius:8px;background:#0d6efd;color:#fff;text-decoration:none;font-weight:600;box-shadow:0 6px 12px rgba(13,110,253,0.18);">
+                    Sign In
+                  </a>
+                </div>
+
+                <p style="margin:0 0 8px 0;color:#6c7a89;font-size:13px;">
+                  If you did not create this account or did not verify your email, please contact our support immediately.
+                </p>
+
+                <div style="text-align:center;margin-top:14px;">
+                  <a href="{{ support_url|default:'#' }}" target="_blank" rel="noopener" style="font-size:13px;color:#0d6efd;text-decoration:none;">
+                    Contact Support
+                  </a>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td style="padding:14px 26px;background:#fbfcfe;text-align:center;color:#7b8896;font-size:13px;">
+                © {{ current_year }} {{ site_name|default:"MySite" }} — Your security is our top priority.
+              </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

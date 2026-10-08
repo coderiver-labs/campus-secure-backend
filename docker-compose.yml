@@ -1,0 +1,288 @@
+services:
+  web:
+    image: campus-secure-web:latest
+    container_name: campus-secure-web
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    command: >
+      sh -c "
+      uv run python manage.py migrate --noinput &&
+      uv run python manage.py collectstatic --noinput &&
+      uv run uvicorn
+      CampusSecure.asgi:application
+      --host 0.0.0.0
+      --port 8000
+      --workers 3
+      "
+
+    expose:
+      - "8000"
+
+    volumes:
+      - static_data:/var/www/campus_secure/static
+      - media_data:/var/www/campus_secure/media
+      - protected_media_data:/var/www/campus_secure/protected_media
+      - django_logs:/var/log/campus-secure/logs
+
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+    networks:
+      - campus-secure-net
+
+  # NGINX
+  nginx:
+    image: nginx:alpine
+    container_name: campus-secure-nginx
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_data:/var/www/campus_secure/static:ro
+      - media_data:/var/www/campus_secure/media:ro
+      - protected_media_data:/var/www/campus_secure/protected_media:ro
+
+    depends_on:
+      - web
+      - grafana
+      - prometheus
+
+    networks:
+      - campus-secure-net
+
+
+
+
+  # Celery Worker
+  celery:
+    image: campus-secure-web:latest
+    container_name: campus-secure-celery
+    restart: unless-stopped
+
+    env_file:
+      - .env
+ 
+    command: >
+      uv run celery
+      -A CampusSecure
+      worker
+      --loglevel=info
+
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+    networks:
+      - campus-secure-net
+
+  # Celery Beat
+  celery-beat:
+    image: campus-secure-web:latest
+    container_name: campus-secure-celery-beat
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    command: >
+      uv run celery
+      -A CampusSecure
+      beat
+      --loglevel=info
+
+    depends_on:
+      rabbitmq:
+        condition: service_started
+
+    networks:
+      - campus-secure-net
+
+
+
+  # PostgreSQL
+  postgres:
+    image: postgres:16
+    container_name: campus-secure-postgres
+    restart: unless-stopped
+    command: postgres -c jit=off
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    expose:
+      - "5432"
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - campus-secure-net
+      
+
+
+  # RABBITMQ
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: campus-secure-rabbitmq
+    restart: unless-stopped
+
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "rabbitmq-diagnostics",
+          "-q",
+          "ping"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - campus-secure-net
+
+
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: campus-secure-prometheus
+    restart: unless-stopped
+
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+
+    volumes:
+      - prometheus_data:/prometheus
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+    expose:
+      - "9090"
+
+    networks:
+      - campus-secure-net
+
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: campus-secure-grafana
+    restart: unless-stopped
+
+    environment:
+      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL}
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+    expose:
+      - "3000"
+
+    networks:
+      - campus-secure-net
+
+  # Loki
+  loki:
+    image: grafana/loki:latest
+    container_name: campus-secure-loki
+    restart: unless-stopped
+
+    volumes:
+      - loki_data:/loki
+    expose:
+      - "3100"
+    networks:
+      - campus-secure-net
+
+
+  # Promtail
+  promtail:
+    image: grafana/promtail:latest
+    container_name: campus-secure-promtail
+    restart: unless-stopped
+
+    volumes:
+      - ./docker/promtail.yml:/etc/promtail/config.yml:ro
+      - django_logs:/var/log/campus-secure/logs:ro
+    
+    command:
+      - -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+
+    networks:
+      - campus-secure-net
+
+
+  # Node Exporter
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: campus-secure-node-exporter
+    restart: unless-stopped
+
+    pid: host
+
+    volumes:
+      - /:/host:ro,rslave
+    command:
+      - --path.rootfs=/host
+    expose:
+      - "9100"
+    networks:
+      - campus-secure-net
+
+
+
+
+
+# Networks
+networks:
+  campus-secure-net:
+
+
+# Named Volumes
+volumes:
+  static_data:
+  media_data:
+  protected_media_data:
+  postgres_data:
+  rabbitmq_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  django_logs:

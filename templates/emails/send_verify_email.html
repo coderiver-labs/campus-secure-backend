@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Email Verification</title>
+  </head>
+  <body style="margin:0;padding:0;background-color:#f4f6f8;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8;padding:24px 0;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 6px 18px rgba(18,38,63,0.08);">
+            <!-- Header -->
+            <tr>
+              <td style="padding:24px 28px;border-bottom:1px solid #eef2f6;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:48px;height:48px;border-radius:8px;background:#0d6efd;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;">
+                    {{ site_initials|default:"S" }}
+                  </div>
+                  <div style="font-size:18px;color:#102a43;font-weight:600;">{{ site_name|default:"MySite" }}</div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td style="padding:28px;">
+                <h1 style="margin:0 0 8px 0;font-size:20px;color:#102a43;">Email Verification Required</h1>
+                <p style="margin:0 0 18px 0;color:#44566c;line-height:1.5;">
+                  Hello {{ user.first_name |default:"User" }}, <br/>
+                  We need to confirm that this email belongs to you. Please click the button below to verify your email. The link will expire within 10 minutes.
+                </p>
+
+                <!-- Button -->
+                <div style="text-align:center;margin:22px 0;">
+                  <!-- button style inspired by Bootstrap 5 primary -->
+                  <a href="{{ url }}" target="_blank" rel="noopener"
+                     style="display:inline-block;padding:12px 22px;border-radius:8px;background:#0d6efd;color:#ffffff;text-decoration:none;font-weight:600;box-shadow:0 6px 12px rgba(13,110,253,0.18);">
+                    Verify Email
+                  </a>
+                </div>
+
+                <p style="margin:0 0 6px 0;color:#6c7a89;font-size:13px;line-height:1.4;">
+                  If the button doesn’t work, copy and paste this URL into your browser:
+                </p>
+                <p style="word-break:break-all;font-size:13px;color:#1b3350;margin-top:6px;">
+                  <a href="{{ url }}" style="color:#0d6efd;text-decoration:none;">{{ url }}</a>
+                </p>
+
+                <hr style="border:none;border-top:1px solid #eef2f6;margin:22px 0;"/>
+
+                <p style="margin:0;color:#596776;font-size:13px;">
+                  If you did not intend to receive this email, simply ignore it — no changes will be made.<br/>
+                  This link will not work after 10 minutes (lifetime: 10 minutes).
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td style="padding:16px 28px;background:#fbfcfe;color:#7b8896;font-size:13px;text-align:center;">
+                © {{ current_year }} {{ site_name|default:"MySite" }} — Keeping everyone secure.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

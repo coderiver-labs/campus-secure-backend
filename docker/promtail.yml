@@ -1,0 +1,50 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+
+scrape_configs:
+  # Django Logs
+  - job_name: django-app
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          app: campus-secure
+          service: django
+          log_type: application
+          env: production
+          __path__: /var/log/campus-secure/logs/app.log
+
+  # Django Error Logs
+  - job_name: django-error
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          app: campus-secure
+          service: django
+          log_type: error
+          env: production
+          __path__: /var/log/campus-secure/logs/error.log
+
+
+  # Django Celery Logs
+  - job_name: celery
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          app: campus-secure
+          service: celery
+          log_type: celery
+          env: production
+          __path__: /var/log/campus-secure/logs/celery.log
+
+          

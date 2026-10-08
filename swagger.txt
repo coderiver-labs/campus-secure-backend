@@ -1,0 +1,7099 @@
+openapi: 3.0.3
+info:
+  title: Campus Secure API
+  version: 1.0.0
+  description: "Campus Secure is a school management and administration backend API
+    built with Django REST Framework. The system provides APIs for managing user accounts,
+    students, teachers, staff, administrators, academic classes, subjects, exams,
+    exam candidates, marks, subscriptions, payments, documents, and audit logs. \n\nThe
+    API implements role-based access control for administrators, staff, teachers,
+    and students, with policy-based authorization and object-level access control
+    where required. \n\nThe system also includes authentication using secure HTTP
+    cookies and CSRF protection, API filtering, searching, ordering, audit logging,
+    payment processing, and background task support. \n\nThis documentation describes
+    the available API endpoints, request and response schemas, authentication requirements,
+    query parameters, and supported operations."
+paths:
+  /accounts/api/admin-contact-info/:
+    get:
+      operationId: accounts_api_admin_contact_info_list
+      description: Retrieve contact information of administrators accessible to the
+        authenticated user.
+      summary: List admin contact information
+      parameters:
+      - in: query
+        name: address__icontains
+        schema:
+          type: string
+      - in: query
+        name: address__iexact
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: phone
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Admin Related
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminContactInfoGetList'
+          description: ''
+  /accounts/api/admin-contact-info/{uuid}/:
+    get:
+      operationId: accounts_api_admin_contact_info_retrieve
+      description: Retrieve contact information for a specific administrator.
+      summary: Retrieve admin contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this admin contact info.
+        required: true
+      tags:
+      - Admin Related
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminContactInfoGet'
+          description: ''
+    put:
+      operationId: accounts_api_admin_contact_info_update
+      description: Update the contact information of an administrator.
+      summary: Update admin contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this admin contact info.
+        required: true
+      tags:
+      - Admin Related
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminContactInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminContactInfoUpdate'
+          description: ''
+    patch:
+      operationId: accounts_api_admin_contact_info_partial_update
+      description: Partially update the contact information of an administrator.
+      summary: Partially update admin contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this admin contact info.
+        required: true
+      tags:
+      - Admin Related
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminContactInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminContactInfoUpdate'
+          description: ''
+  /accounts/api/manage-user/:
+    get:
+      operationId: accounts_api_manage_user_list
+      description: "Retrieve a list of users accessible to the authenticated user.
+        The returned users are automatically filtered according to the authenticated
+        user's role and access boundaries.\n\nSuperusers can access all users. Admins
+        can access staff, teachers, and students, including themselves. Staff can
+        access teachers and students, including themselves. Teachers can access students
+        who belong to classes assigned to them. \n\nSupports filtering, searching,
+        and ordering using the configured query parameters."
+      summary: List users
+      parameters:
+      - in: query
+        name: created_at__date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: created_at__lte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: email
+        schema:
+          type: string
+      - in: query
+        name: email__icontains
+        schema:
+          type: string
+      - in: query
+        name: email__iexact
+        schema:
+          type: string
+      - in: query
+        name: email__istartswith
+        schema:
+          type: string
+      - in: query
+        name: first_name__icontains
+        schema:
+          type: string
+      - in: query
+        name: first_name__iexact
+        schema:
+          type: string
+      - in: query
+        name: first_name__istartswith
+        schema:
+          type: string
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: last_name__icontains
+        schema:
+          type: string
+      - in: query
+        name: last_name__iexact
+        schema:
+          type: string
+      - in: query
+        name: last_name__istartswith
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: role__iexact
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Accounts
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserResponseByRoleList'
+          description: ''
+    post:
+      operationId: accounts_api_manage_user_create
+      description: |-
+        Create a new user account with an optional role-specific profile.
+
+        Students must provide a `student_class`. Staff users must provide a `position`. Teacher and admin profile data are handled by the user creation service according to the selected role.
+
+        The password is accepted only during creation and is write-only.
+      summary: Create a user
+      tags:
+      - Accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomUserCreate'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUserForSuperUserAndAdminView'
+          description: ''
+  /accounts/api/manage-user/{uuid}/:
+    get:
+      operationId: accounts_api_manage_user_retrieve
+      description: |-
+        Retrieve detailed information about a specific user identified by their UUID.
+
+        Access to the requested user is determined by the authenticated user's role and the configured permission policies. The response contains user information together with the accessible profile information.
+      summary: Retrieve a user
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this custom user.
+        required: true
+      tags:
+      - Accounts
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseByRole'
+          description: ''
+    put:
+      operationId: accounts_api_manage_user_update
+      description: |-
+        Replace the allowed user information for an existing user.
+
+        Only the fields exposed by the update serializer can be modified: `first_name`, `last_name`, `is_active`, and `is_verified`.
+
+        Updating a user's role, email, password, UUID, or profile-specific fields is not supported by this endpoint.
+      summary: Update a user
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this custom user.
+        required: true
+      tags:
+      - Accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomUserUpdate'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUserUpdate'
+          description: ''
+    patch:
+      operationId: accounts_api_manage_user_partial_update
+      description: |-
+        Partially update an existing user's information.
+
+        Any combination of the supported fields may be provided. Fields that are not included in the request remain unchanged.
+
+        Supported fields are `first_name`, `last_name`, `is_active`, and `is_verified`.
+      summary: Partially update a user
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this custom user.
+        required: true
+      tags:
+      - Accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCustomUserUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUserUpdate'
+          description: ''
+    delete:
+      operationId: accounts_api_manage_user_destroy
+      description: |-
+        Delete a user account and its associated profile and related user information according to the configured database relationships.
+
+        The authenticated user's permissions and role boundaries are checked before deletion. A deletion audit record is created before the user is removed.
+      summary: Delete a user
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this custom user.
+        required: true
+      tags:
+      - Accounts
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '204':
+          description: No response body
+  /accounts/api/staff-contact-info/:
+    get:
+      operationId: accounts_api_staff_contact_info_list
+      description: Retrieve contact information of staff members accessible to the
+        authenticated user.
+      summary: List staff contact information
+      parameters:
+      - in: query
+        name: address__icontains
+        schema:
+          type: string
+      - in: query
+        name: address__iexact
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: phone
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Staff Related
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffContactInfoGetList'
+          description: ''
+  /accounts/api/staff-contact-info/{uuid}/:
+    get:
+      operationId: accounts_api_staff_contact_info_retrieve
+      description: Retrieve contact information for a specific staff member.
+      summary: Retrieve staff contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this staff contact info.
+        required: true
+      tags:
+      - Staff Related
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffContactInfoGet'
+          description: ''
+    put:
+      operationId: accounts_api_staff_contact_info_update
+      description: Update the contact information of a staff member.
+      summary: Update staff contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this staff contact info.
+        required: true
+      tags:
+      - Staff Related
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffContactInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffContactInfoGet'
+          description: ''
+    patch:
+      operationId: accounts_api_staff_contact_info_partial_update
+      description: Partially update the contact information of a staff member.
+      summary: Partially update staff contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this staff contact info.
+        required: true
+      tags:
+      - Staff Related
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffContactInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffContactInfoGet'
+          description: ''
+  /accounts/api/staff-position/:
+    get:
+      operationId: accounts_api_staff_position_list
+      description: Retrieve all available staff positions.
+      summary: List staff positions
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Staff Related
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffPositionList'
+          description: ''
+    post:
+      operationId: accounts_api_staff_position_create
+      description: Create a new staff position.
+      summary: Create a staff position
+      tags:
+      - Staff Related
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffPosition'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPosition'
+          description: ''
+  /accounts/api/staff-position/{uuid}/:
+    get:
+      operationId: accounts_api_staff_position_retrieve
+      description: Retrieve details of a specific staff position.
+      summary: Retrieve a staff position
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this staff position.
+        required: true
+      tags:
+      - Staff Related
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPosition'
+          description: ''
+  /accounts/api/student-academic-info/:
+    get:
+      operationId: accounts_api_student_academic_info_list
+      description: Retrieve academic information of students accessible to the authenticated
+        user.
+      summary: List student academic information
+      parameters:
+      - in: query
+        name: admission_date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: class_level
+        schema:
+          type: string
+        description: Class level
+      - in: query
+        name: end_year
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: previous_school
+        schema:
+          type: string
+      - in: query
+        name: roll_number
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: start_year
+        schema:
+          type: integer
+      - in: query
+        name: student_class
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - Student Profile & Academic
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudentAcademicInfoGETList'
+          description: ''
+  /accounts/api/student-academic-info/{uuid}/:
+    get:
+      operationId: accounts_api_student_academic_info_retrieve
+      description: Retrieve academic information for a specific student.
+      summary: Retrieve student academic information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student academic info.
+        required: true
+      tags:
+      - Student Profile & Academic
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentAcademicInfoGET'
+          description: ''
+    put:
+      operationId: accounts_api_student_academic_info_update
+      description: Update the academic information of a student.
+      summary: Update student academic information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student academic info.
+        required: true
+      tags:
+      - Student Additional Information
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentAcademicInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentAcademicInfoGET'
+          description: ''
+    patch:
+      operationId: accounts_api_student_academic_info_partial_update
+      description: Partially update the academic information of a student.
+      summary: Partially update student academic information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student academic info.
+        required: true
+      tags:
+      - Student Profile & Academic
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentAcademicInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentAcademicInfoGET'
+          description: ''
+  /accounts/api/student-contact-info/:
+    get:
+      operationId: accounts_api_student_contact_info_list
+      description: Retrieve contact information of students accessible to the authenticated
+        user.
+      summary: List student contact information
+      parameters:
+      - in: query
+        name: address__icontains
+        schema:
+          type: string
+      - in: query
+        name: address__iexact
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: phone
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Student Additional Information
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudentContactInfoGetList'
+          description: ''
+  /accounts/api/student-contact-info/{uuid}/:
+    get:
+      operationId: accounts_api_student_contact_info_retrieve
+      description: Retrieve contact information for a specific student.
+      summary: Retrieve student contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student contact info.
+        required: true
+      tags:
+      - Student Additional Information
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentContactInfoGet'
+          description: ''
+    put:
+      operationId: accounts_api_student_contact_info_update
+      description: Update the contact information of a student.
+      summary: Update student contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student contact info.
+        required: true
+      tags:
+      - Student Additional Information
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentContactInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentContactInfoGet'
+          description: ''
+    patch:
+      operationId: accounts_api_student_contact_info_partial_update
+      description: Partially update the contact information of a student.
+      summary: Partially update student contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student contact info.
+        required: true
+      tags:
+      - Student Additional Information
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentContactInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentContactInfoGet'
+          description: ''
+  /accounts/api/student-health-info/:
+    get:
+      operationId: accounts_api_student_health_info_list
+      description: Retrieve health information of students accessible to the authenticated
+        user.
+      summary: List student health information
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Student Additional Information
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudentHealthInfoGetList'
+          description: ''
+  /accounts/api/student-health-info/{uuid}/:
+    get:
+      operationId: accounts_api_student_health_info_retrieve
+      description: Retrieve health information for a specific student.
+      summary: Retrieve student health information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student health info.
+        required: true
+      tags:
+      - Student Additional Information
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentHealthInfoGet'
+          description: ''
+    put:
+      operationId: accounts_api_student_health_info_update
+      description: Update the health information of a student.
+      summary: Update student health information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student health info.
+        required: true
+      tags:
+      - Student Additional Information
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentHealthInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentHealthInfoGet'
+          description: ''
+    patch:
+      operationId: accounts_api_student_health_info_partial_update
+      description: Partially update the health information of a student.
+      summary: Partially update student health information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student health info.
+        required: true
+      tags:
+      - Student Additional Information
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentHealthInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentHealthInfoGet'
+          description: ''
+  /accounts/api/student-parents-info/:
+    get:
+      operationId: accounts_api_student_parents_info_list
+      description: Retrieve parents information of students accessible to the authenticated
+        user.
+      summary: List student parents information
+      parameters:
+      - in: query
+        name: father_name__iexact
+        schema:
+          type: string
+      - in: query
+        name: father_phone
+        schema:
+          type: string
+      - in: query
+        name: mother_name__iexact
+        schema:
+          type: string
+      - in: query
+        name: mother_phone
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Student Additional Information
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudentParentsInfoGetList'
+          description: ''
+  /accounts/api/student-parents-info/{uuid}/:
+    get:
+      operationId: accounts_api_student_parents_info_retrieve
+      description: Retrieve parents information for a specific student.
+      summary: Retrieve student parents information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student parents info.
+        required: true
+      tags:
+      - Student Additional Information
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentParentsInfoGet'
+          description: ''
+    put:
+      operationId: accounts_api_student_parents_info_update
+      description: Update the parents information of a student.
+      summary: Update student parents information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student parents info.
+        required: true
+      tags:
+      - Student Additional Information
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentParentsInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentParentsInfoGet'
+          description: ''
+    patch:
+      operationId: accounts_api_student_parents_info_partial_update
+      description: Partially update the parents information of a student.
+      summary: Partially update student parents information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student parents info.
+        required: true
+      tags:
+      - Student Additional Information
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentParentsInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentParentsInfoGet'
+          description: ''
+  /accounts/api/teacher-assignment/:
+    get:
+      operationId: accounts_api_teacher_assignment_list
+      description: Retrieve a list of teacher assignments with filtering, searching,
+        and ordering support.
+      summary: List teacher assignments
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: student_class__student_class_level__name
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '10'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
+          - '9'
+        description: |-
+          * `1` - One
+          * `2` - Two
+          * `3` - Three
+          * `4` - Four
+          * `5` - Five
+          * `6` - Six
+          * `7` - Seven
+          * `8` - Eight
+          * `9` - Nine
+          * `10` - Ten
+      - in: query
+        name: subject__code
+        schema:
+          type: string
+      - in: query
+        name: subject__name__iexact
+        schema:
+          type: string
+      - in: query
+        name: teacher__user__first_name__iexact
+        schema:
+          type: string
+      - in: query
+        name: teacher__user__last_name__iexact
+        schema:
+          type: string
+      tags:
+      - Teacher Assignments
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTeacherAssignmentListRetrieveList'
+          description: ''
+    post:
+      operationId: accounts_api_teacher_assignment_create
+      description: Assign a teacher to a student class and subject.
+      summary: Create a teacher assignment
+      tags:
+      - Teacher Assignments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeacherAssignmentCreateUpdate'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherAssignmentListRetrieve'
+          description: ''
+  /accounts/api/teacher-assignment/{uuid}/:
+    get:
+      operationId: accounts_api_teacher_assignment_retrieve
+      description: Retrieve details of a specific teacher assignment.
+      summary: Retrieve a teacher assignment
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this teacher assignment.
+        required: true
+      tags:
+      - Teacher Assignments
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherAssignmentListRetrieve'
+          description: ''
+    put:
+      operationId: accounts_api_teacher_assignment_update
+      description: Update an existing teacher assignment.
+      summary: Update a teacher assignment
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this teacher assignment.
+        required: true
+      tags:
+      - Teacher Assignments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeacherAssignmentCreateUpdate'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherAssignmentListRetrieve'
+          description: ''
+    patch:
+      operationId: accounts_api_teacher_assignment_partial_update
+      description: Partially update an existing teacher assignment.
+      summary: Partially update a teacher assignment
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this teacher assignment.
+        required: true
+      tags:
+      - Teacher Assignments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTeacherAssignmentCreateUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherAssignmentListRetrieve'
+          description: ''
+    delete:
+      operationId: accounts_api_teacher_assignment_destroy
+      description: Delete an existing teacher assignment.
+      summary: Delete a teacher assignment
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this teacher assignment.
+        required: true
+      tags:
+      - Teacher Assignments
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '204':
+          description: No response body
+  /accounts/api/teacher-contact-info/:
+    get:
+      operationId: accounts_api_teacher_contact_info_list
+      description: Retrieve contact information of teachers accessible to the authenticated
+        user.
+      summary: List teacher contact information
+      parameters:
+      - in: query
+        name: address__icontains
+        schema:
+          type: string
+      - in: query
+        name: address__iexact
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: phone
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Teacher Related
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTeacherContactInfoGetList'
+          description: ''
+  /accounts/api/teacher-contact-info/{uuid}/:
+    get:
+      operationId: accounts_api_teacher_contact_info_retrieve
+      description: Retrieve contact information for a specific teacher.
+      summary: Retrieve teacher contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this teacher contact info.
+        required: true
+      tags:
+      - Teacher Related
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherContactInfoGet'
+          description: ''
+    put:
+      operationId: accounts_api_teacher_contact_info_update
+      description: Update the contact information of a teacher.
+      summary: Update teacher contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this teacher contact info.
+        required: true
+      tags:
+      - Teacher Related
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeacherContactInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherContactInfoGet'
+          description: ''
+    patch:
+      operationId: accounts_api_teacher_contact_info_partial_update
+      description: Partially update the contact information of a teacher.
+      summary: Partially update teacher contact information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this teacher contact info.
+        required: true
+      tags:
+      - Teacher Related
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTeacherContactInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherContactInfoGet'
+          description: ''
+  /accounts/api/teacher-professional-info/:
+    get:
+      operationId: accounts_api_teacher_professional_info_list
+      description: Retrieve professional information of teachers accessible to the
+        authenticated user.
+      summary: List teacher professional information
+      parameters:
+      - in: query
+        name: education_qualification__iexact
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: qualification__iexact
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: subjects_specialization__iexact
+        schema:
+          type: string
+      - in: query
+        name: years_of_experience__iexact
+        schema:
+          type: integer
+      tags:
+      - Teacher Related
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTeacherProfessionalInfoGetList'
+          description: ''
+  /accounts/api/teacher-professional-info/{uuid}/:
+    get:
+      operationId: accounts_api_teacher_professional_info_retrieve
+      description: Retrieve professional information for a specific teacher.
+      summary: Retrieve teacher professional information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this teacher professional info.
+        required: true
+      tags:
+      - Teacher Related
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherProfessionalInfoGet'
+          description: ''
+    put:
+      operationId: accounts_api_teacher_professional_info_update
+      description: Update the professional information of a teacher.
+      summary: Update teacher professional information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this teacher professional info.
+        required: true
+      tags:
+      - Teacher Related
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeacherProfessionalInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherProfessionalInfoGet'
+          description: ''
+    patch:
+      operationId: accounts_api_teacher_professional_info_partial_update
+      description: Partially update the professional information of a teacher.
+      summary: Partially update teacher professional information
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this teacher professional info.
+        required: true
+      tags:
+      - Teacher Related
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTeacherProfessionalInfoUpdate'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherProfessionalInfoGet'
+          description: ''
+  /accounts/change-password/:
+    post:
+      operationId: accounts_change_password_create
+      description: |-
+        ChangePasswordAPI is a protected API for changing user passwords.
+        - This API uses a **POST request**
+        - Required fields: `old_password`, `new_password`
+        - On successful password change, the user's password will be updated.
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangePassword'
+          description: ''
+  /accounts/forget-password/:
+    post:
+      operationId: accounts_forget_password_create
+      description: |-
+        ForgetPasswordAPI is a public API for initiating the password reset process.
+        - This API uses a **POST request**
+        - Required field: `email`
+        - If the user exists, a password reset email will be sent to the provided email address.
+        - Rate Limit: Maximum 5 requests per minute per IP
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendVerifyEmail'
+        required: true
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResendVerifyEmail'
+          description: ''
+  /accounts/get-access-token/:
+    post:
+      operationId: accounts_get_access_token_create
+      description: |-
+        Issue a new access token from a valid refresh token and set it as a secure cookie.
+
+        - Purpose: validate an incoming refresh token, generate a new access token,
+          and attach that access token to the response as an HTTP-only secure cookie.
+          can easily follow the flow and understand CookieHandler usage.
+        - Behavior:
+            * Validates refresh token (via validate_refresh_token).
+            * Creates a Response containing a success message or token payload.
+            * Uses CookieHandler to set the access token cookie and returns the final response.
+        - Authentication: public endpoint that accepts a refresh token (usually sent via cookie).
+        - Response: returns the response produced by CookieHandler (cookie set + JSON body).
+      tags:
+      - Authentication
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAccessTokenResponse'
+          description: ''
+  /accounts/get-csrf-token/:
+    get:
+      operationId: accounts_get_csrf_token_retrieve
+      description: |-
+        GetCsrfToken is a public API for retrieving a CSRF token.
+
+        - This API uses a **GET request**
+        - When you call this API, a **CSRF token will be automatically set in your browser cookie**
+        - The CSRF token is required for all unsafe requests such as **POST, PUT, PATCH, DELETE**
+        - This improves security and prevents Cross-Site Request Forgery (CSRF) attacks
+        - Rate Limit: Maximum 10 requests per minute per IP
+      tags:
+      - Authentication
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /accounts/login/:
+    post:
+      operationId: accounts_login_create
+      description: |-
+        LoginGenericAPIView is a public API for user login.
+        - This API uses a **POST request**
+        - Required fields: `email`, `password`
+        - On successful login, authentication cookies will be set in the response.
+        - Rate Limit: Maximum 5 login attempts per minute per IP
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUser'
+        required: true
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginUser'
+          description: ''
+  /accounts/logout/:
+    post:
+      operationId: accounts_logout_create
+      description: |-
+        LogoutAPI is a public API for user logout.
+        - This API uses a **POST request**
+        - On successful logout, authentication cookies will be cleared from the response.
+        - Rate Limit: Maximum 10 requests per minute per IP
+      tags:
+      - Authentication
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          description: No response body
+  /accounts/profile/:
+    get:
+      operationId: accounts_profile_retrieve
+      description: Retrieve the profile information of the authenticated user.
+      summary: Retrieve user profile
+      tags:
+      - Accounts
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully.
+  /accounts/resend-verification-email/:
+    post:
+      operationId: accounts_resend_verification_email_create
+      description: |-
+        ResendVerificationEmailAPI is a public API for resending account verification emails.
+        - This API uses a **POST request**
+        - Required field: `email`
+        - If the user is not already verified, a new verification email will be sent to the provided email address.
+        - Rate Limit: Maximum 10 requests per minute per IP
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendVerifyEmail'
+        required: true
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResendVerifyEmail'
+          description: ''
+  /accounts/reset-password/{token}/:
+    post:
+      operationId: accounts_reset_password_create
+      description: |-
+        ResetPasswordAPI is a public API for resetting user passwords.
+        - This API uses a **POST request**
+        - Required field: `password`
+        - On successful password reset, the user's password will be updated.
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPassword'
+        required: true
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetPassword'
+          description: ''
+  /accounts/verify-account/{token}/:
+    get:
+      operationId: accounts_verify_account_retrieve
+      description: |-
+        VerifyAccountAPI is a public API for verifying user accounts.
+        - This API uses a **GET request**
+        - The `token` parameter in the URL is a one-time token sent to the user's email for account verification.
+        - On successful verification, the user's account will be marked as verified.
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - Authentication
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /audit-logs/audit/:
+    get:
+      operationId: audit_logs_audit_list
+      description: Retrieve a list of audit logs with support for filtering, searching,
+        and ordering.
+      summary: List Audit Logs
+      parameters:
+      - in: query
+        name: action__iexact
+        schema:
+          type: string
+      - in: query
+        name: actor
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: content_type
+        schema:
+          type: integer
+      - in: query
+        name: created_at__date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: created_at__lte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: object_id__iexact
+        schema:
+          type: string
+          format: uuid
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Audit Logs
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditLogList'
+          description: ''
+  /audit-logs/audit/{uuid}/:
+    get:
+      operationId: audit_logs_audit_retrieve
+      description: Retrieve details of a specific audit log.
+      summary: Retrieve Audit Log
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this audit log.
+        required: true
+      tags:
+      - Audit Logs
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLog'
+          description: ''
+  /dev/10s-delay/:
+    get:
+      operationId: dev_10s_delay_retrieve
+      description: Delays the response by approximately 10 seconds for performance
+        and tracing tests.
+      summary: Simulate 10 second delay
+      tags:
+      - Test And Error
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          description: No response body
+  /dev/2s-delay/:
+    get:
+      operationId: dev_2s_delay_retrieve
+      description: Delays the response by approximately 2 seconds for performance
+        and tracing tests.
+      summary: Simulate 2 second delay
+      tags:
+      - Test And Error
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          description: No response body
+  /dev/5s-delay/:
+    get:
+      operationId: dev_5s_delay_retrieve
+      description: Delays the response by approximately 5 seconds for performance
+        and tracing tests.
+      summary: Simulate 5 second delay
+      tags:
+      - Test And Error
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          description: No response body
+  /dev/cpu-load/:
+    get:
+      operationId: dev_cpu_load_retrieve
+      description: Performs a CPU-intensive calculation for performance monitoring
+        tests.
+      summary: Simulate CPU intensive request
+      tags:
+      - Test And Error
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          description: No response body
+  /dev/db-error/:
+    get:
+      operationId: dev_db_error_retrieve
+      description: Intentionally executes an invalid SQL query to trigger a database
+        error.
+      summary: Trigger database error
+      tags:
+      - Test And Error
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          description: No response body
+  /dev/get-celery-error/:
+    get:
+      operationId: dev_get_celery_error_retrieve
+      description: Trigger a Celery task that intentionally raises an error. This
+        endpoint is provided for testing Celery error handling and monitoring behavior.
+      summary: Trigger Celery Error Task
+      tags:
+      - Test And Error
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          description: Celery error task was successfully queued.
+  /dev/get-celery-success/:
+    get:
+      operationId: dev_get_celery_success_retrieve
+      description: Trigger a Celery task that completes successfully. This endpoint
+        is provided for testing Celery task execution and successful task monitoring.
+      summary: Trigger Celery Success Task
+      tags:
+      - Test And Error
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          description: Celery success task was successfully queued.
+  /dev/get-error-500/:
+    get:
+      operationId: dev_get_error_500_retrieve
+      description: Intentionally triggers a ZeroDivisionError for error monitoring
+        tests.
+      summary: Trigger division error
+      tags:
+      - Test And Error
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /documents/profile-picture/:
+    get:
+      operationId: documents_profile_picture_retrieve
+      description: Securely retrieve the authenticated user's profile picture. The
+        protected file is served through NGINX using X-Accel-Redirect. Only authenticated
+        users with the required permission can access the profile picture.
+      summary: Retrieve Profile Picture
+      tags:
+      - Profile
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    post:
+      operationId: documents_profile_picture_create
+      description: Upload and set a profile picture for the authenticated user. The
+        uploaded file is validated and stored as the user's protected profile document.
+      summary: Set Profile Picture
+      tags:
+      - Profile
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          description: Profile picture set successfully.
+  /exams/exam/:
+    get:
+      operationId: exams_exam_list
+      description: Retrieve a list of exams with filtering, searching, and ordering
+        support.
+      summary: List Exams
+      parameters:
+      - in: query
+        name: created_at__date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: created_at__gte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: created_at__lte
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: end_date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: end_date__gte
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: end_date__lte
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: start_date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: start_date__gte
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: start_date__lte
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: status__iexact
+        schema:
+          type: string
+      - in: query
+        name: year
+        schema:
+          type: integer
+      tags:
+      - Exam Management
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExamList'
+          description: ''
+    post:
+      operationId: exams_exam_create
+      description: Create a new exam.
+      summary: Create Exam
+      tags:
+      - Exam Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Exam'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exam'
+          description: ''
+  /exams/exam-candidate/:
+    get:
+      operationId: exams_exam_candidate_retrieve
+      description: Retrieve students associated with an exam subject. Candidates can
+        be filtered by their mark completion status.
+      summary: List Exam Candidates
+      parameters:
+      - in: query
+        name: exam_subject
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the exam subject.
+        required: true
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - all
+          - completed
+          - remaining
+          default: remaining
+        description: Filter candidates by mark completion status.
+      tags:
+      - Exam Candidates & Marks
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamCandidate'
+          description: ''
+  /exams/exam-candidate/{id}/:
+    get:
+      operationId: exams_exam_candidate_retrieve_2
+      description: Retrieve students associated with an exam subject. Candidates can
+        be filtered by their mark completion status.
+      summary: List Exam Candidates
+      parameters:
+      - in: query
+        name: exam_subject
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the exam subject.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - all
+          - completed
+          - remaining
+          default: remaining
+        description: Filter candidates by mark completion status.
+      tags:
+      - Exam Candidates & Marks
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamCandidate'
+          description: ''
+  /exams/exam-class/:
+    get:
+      operationId: exams_exam_class_list
+      description: Retrieve a list of exam classes with filtering, searching, and
+        ordering support.
+      summary: List Exam Classes
+      parameters:
+      - in: query
+        name: exam__is_active
+        schema:
+          type: boolean
+      - in: query
+        name: exam__status__iexact
+        schema:
+          type: string
+      - in: query
+        name: exam__uuid
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: exam__year
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: student_class__uuid
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - Exam Classes
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExamClassReadList'
+          description: ''
+    post:
+      operationId: exams_exam_class_create
+      description: Create a new exam class.
+      summary: Create Exam Class
+      tags:
+      - Exam Classes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamClassWrite'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamClassWrite'
+          description: ''
+  /exams/exam-class/{uuid}/:
+    get:
+      operationId: exams_exam_class_retrieve
+      description: Retrieve details of a specific exam class.
+      summary: Retrieve Exam Class
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam class.
+        required: true
+      tags:
+      - Exam Classes
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamClassRead'
+          description: ''
+    put:
+      operationId: exams_exam_class_update
+      description: Update an existing exam class.
+      summary: Update Exam Class
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam class.
+        required: true
+      tags:
+      - Exam Classes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamClassWrite'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamClassWrite'
+          description: ''
+    patch:
+      operationId: exams_exam_class_partial_update
+      description: Partially update an existing exam class.
+      summary: Partially Update Exam Class
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam class.
+        required: true
+      tags:
+      - Exam Classes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExamClassWrite'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamClassWrite'
+          description: ''
+    delete:
+      operationId: exams_exam_class_destroy
+      description: Delete an existing exam class.
+      summary: Delete Exam Class
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam class.
+        required: true
+      tags:
+      - Exam Classes
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '204':
+          description: No response body
+  /exams/exam-subject/:
+    get:
+      operationId: exams_exam_subject_list
+      description: Retrieve a list of exam subjects with filtering, searching, and
+        ordering support.
+      summary: List Exam Subjects
+      parameters:
+      - in: query
+        name: class_level
+        schema:
+          type: string
+        description: Class level
+      - in: query
+        name: exam_name
+        schema:
+          type: string
+        description: Exam Name
+      - in: query
+        name: full_mark
+        schema:
+          type: number
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+        description: Exam
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: pass_mark
+        schema:
+          type: number
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+        description: Status
+      - in: query
+        name: subject_name
+        schema:
+          type: string
+        description: Subject Name
+      tags:
+      - Exam Subjects
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExamSubjectReadList'
+          description: ''
+    post:
+      operationId: exams_exam_subject_create
+      description: Create a new exam subject.
+      summary: Create Exam Subject
+      tags:
+      - Exam Subjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamSubjectWrite'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSubjectWrite'
+          description: ''
+  /exams/exam-subject/{uuid}/:
+    get:
+      operationId: exams_exam_subject_retrieve
+      description: Retrieve details of a specific exam subject.
+      summary: Retrieve Exam Subject
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam subject.
+        required: true
+      tags:
+      - Exam Subjects
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSubjectRead'
+          description: ''
+    put:
+      operationId: exams_exam_subject_update
+      description: Update an existing exam subject.
+      summary: Update Exam Subject
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam subject.
+        required: true
+      tags:
+      - Exam Subjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamSubjectWrite'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSubjectWrite'
+          description: ''
+    patch:
+      operationId: exams_exam_subject_partial_update
+      description: Partially update an existing exam subject.
+      summary: Partially Update Exam Subject
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam subject.
+        required: true
+      tags:
+      - Exam Subjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExamSubjectWrite'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamSubjectWrite'
+          description: ''
+    delete:
+      operationId: exams_exam_subject_destroy
+      description: Delete an existing exam subject.
+      summary: Delete Exam Subject
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam subject.
+        required: true
+      tags:
+      - Exam Subjects
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '204':
+          description: No response body
+  /exams/exam/{uuid}/:
+    get:
+      operationId: exams_exam_retrieve
+      description: Retrieve details of a specific exam.
+      summary: Retrieve Exam
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam.
+        required: true
+      tags:
+      - Exam Management
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exam'
+          description: ''
+    put:
+      operationId: exams_exam_update
+      description: Update an existing exam.
+      summary: Update Exam
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam.
+        required: true
+      tags:
+      - Exam Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Exam'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exam'
+          description: ''
+    patch:
+      operationId: exams_exam_partial_update
+      description: Partially update an existing exam.
+      summary: Partially Update Exam
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam.
+        required: true
+      tags:
+      - Exam Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExam'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exam'
+          description: ''
+    delete:
+      operationId: exams_exam_destroy
+      description: Delete an existing exam.
+      summary: Delete Exam
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this exam.
+        required: true
+      tags:
+      - Exam Management
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '204':
+          description: No response body
+  /exams/student-mark/:
+    get:
+      operationId: exams_student_mark_list
+      description: Retrieve a list of student marks.
+      summary: List student marks
+      parameters:
+      - in: query
+        name: exam_class
+        schema:
+          type: string
+          format: uuid
+        description: Exam Class
+      - in: query
+        name: exam_name
+        schema:
+          type: string
+        description: Exam Name
+      - in: query
+        name: first_name
+        schema:
+          type: string
+          format: uuid
+        description: User first Name
+      - in: query
+        name: is_absent
+        schema:
+          type: boolean
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+        description: Is Active Exam
+      - in: query
+        name: marks_obtained
+        schema:
+          type: number
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: student
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: student_class
+        schema:
+          type: string
+          format: uuid
+        description: Student Class
+      - in: query
+        name: subject
+        schema:
+          type: string
+          format: uuid
+        description: Exam Subject
+      - in: query
+        name: subject_name
+        schema:
+          type: string
+        description: Exam Subject Name
+      tags:
+      - Exam Candidates & Marks
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudentMarkReadList'
+          description: ''
+    post:
+      operationId: exams_student_mark_create
+      description: Create a new mark record for a student.
+      summary: Create a student mark
+      tags:
+      - Exam Candidates & Marks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentMark'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentMark'
+          description: ''
+  /exams/student-mark/{uuid}/:
+    get:
+      operationId: exams_student_mark_retrieve
+      description: Retrieve detailed information about a specific student mark.
+      summary: Retrieve a student mark
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student mark.
+        required: true
+      tags:
+      - Exam Candidates & Marks
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentMarkRead'
+          description: ''
+    put:
+      operationId: exams_student_mark_update
+      description: Update an existing student mark.
+      summary: Update a student mark
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student mark.
+        required: true
+      tags:
+      - Exam Candidates & Marks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentMark'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentMark'
+          description: ''
+    patch:
+      operationId: exams_student_mark_partial_update
+      description: Partially update an existing student mark.
+      summary: Partially update a student mark
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student mark.
+        required: true
+      tags:
+      - Exam Candidates & Marks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentMark'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentMark'
+          description: ''
+    delete:
+      operationId: exams_student_mark_destroy
+      description: Delete an existing student mark.
+      summary: Delete a student mark
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student mark.
+        required: true
+      tags:
+      - Exam Candidates & Marks
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '204':
+          description: No response body
+  /payment/cancel/:
+    get:
+      operationId: payment_cancel_retrieve
+      description: Handle the cancelled payment callback and return a confirmation
+        message when the payment process is cancelled.
+      summary: Payment Cancelled
+      tags:
+      - Payment Callback
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /payment/fee-payment/:
+    get:
+      operationId: payment_fee_payment_list
+      description: Retrieve a list of student fee payments with support for filtering,
+        searching, and ordering.
+      summary: List Fee Payments
+      parameters:
+      - in: query
+        name: class_level
+        schema:
+          type: string
+        description: Class level
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: student
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: student__user
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: student_class
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - Payments
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFeePaymentGetList'
+          description: ''
+    post:
+      operationId: payment_fee_payment_create
+      description: Create a new school fee payment record for a student.
+      summary: Create Fee Payment
+      tags:
+      - Payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeePaymentCU'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeePaymentCU'
+          description: ''
+  /payment/fee-payment/{uuid}/:
+    get:
+      operationId: payment_fee_payment_retrieve
+      description: Retrieve details of a specific student fee payment.
+      summary: Retrieve Fee Payment
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this fee payment.
+        required: true
+      tags:
+      - Payments
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeePaymentGet'
+          description: ''
+    put:
+      operationId: payment_fee_payment_update
+      description: Update an existing student fee payment record.
+      summary: Update Fee Payment
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this fee payment.
+        required: true
+      tags:
+      - Payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeePaymentCU'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeePaymentCU'
+          description: ''
+    patch:
+      operationId: payment_fee_payment_partial_update
+      description: Partially update an existing student fee payment record.
+      summary: Partially Update Fee Payment
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this fee payment.
+        required: true
+      tags:
+      - Payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFeePaymentCU'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeePaymentCU'
+          description: ''
+  /payment/school-fee-plan/:
+    get:
+      operationId: payment_school_fee_plan_retrieve
+      description: Retrieve the available school classes and their applicable school
+        fee information. This endpoint is publicly accessible and can be used to view
+        the available fee plans before starting a payment.
+      summary: List School Fee Plans
+      tags:
+      - Payment Checkout
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchoolFee'
+          description: ''
+    post:
+      operationId: payment_school_fee_plan_create
+      description: Create a payment checkout session for a student. Provide the student's
+        email and student class to calculate the applicable school fee and generate
+        a Stripe checkout URL. If the student's school fee for the current year is
+        already complete, no checkout session will be created.
+      summary: Create Student Fee Checkout
+      tags:
+      - Payment Checkout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentFeeCheckout'
+        required: true
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          description: Returns the student's name and the generated payment checkout
+            URL.
+  /payment/stripe/webhook/:
+    post:
+      operationId: payment_stripe_webhook_create
+      description: Receive and process Stripe webhook events for payment processing.
+        The request is verified using the Stripe webhook signature before processing
+        the event. When a checkout session is completed, the corresponding payment
+        session is processed and the payment record is handled by the backend.
+      summary: Handle Stripe Webhook
+      tags:
+      - Stripe Webhook
+      security:
+      - {}
+      responses:
+        '200':
+          description: Stripe webhook processed successfully.
+        '400':
+          description: Invalid payload or invalid Stripe signature.
+  /payment/success/:
+    get:
+      operationId: payment_success_retrieve
+      description: Handle the successful payment callback and return a confirmation
+        message after a successful payment flow.
+      summary: Payment Success
+      tags:
+      - Payment Callback
+      security:
+      - CSRFToken: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /school/class-level/:
+    get:
+      operationId: school_class_level_list
+      description: Retrieve a list of class levels with filtering, searching, and
+        ordering support.
+      summary: List Class Levels
+      parameters:
+      - in: query
+        name: monthly_fee
+        schema:
+          type: number
+      - in: query
+        name: monthly_fee__icontains
+        schema:
+          type: number
+      - in: query
+        name: name
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '10'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
+          - '9'
+        description: |-
+          * `1` - One
+          * `2` - Two
+          * `3` - Three
+          * `4` - Four
+          * `5` - Five
+          * `6` - Six
+          * `7` - Seven
+          * `8` - Eight
+          * `9` - Nine
+          * `10` - Ten
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: subjects
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+        explode: true
+        style: form
+      - in: query
+        name: subjects__name__icontains
+        schema:
+          type: string
+      - in: query
+        name: subjects__name__iexact
+        schema:
+          type: string
+      tags:
+      - Class Levels
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedClassLevelList'
+          description: ''
+    post:
+      operationId: school_class_level_create
+      description: Create a new class level with its monthly fee and associated subjects.
+      summary: Create Class Level
+      tags:
+      - Class Levels
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassLevel'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassLevel'
+          description: ''
+  /school/class-level/{uuid}/:
+    get:
+      operationId: school_class_level_retrieve
+      description: Retrieve details of a specific class level.
+      summary: Retrieve Class Level
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this class level.
+        required: true
+      tags:
+      - Class Levels
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassLevel'
+          description: ''
+    put:
+      operationId: school_class_level_update
+      description: Update an existing class level.
+      summary: Update Class Level
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this class level.
+        required: true
+      tags:
+      - Class Levels
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassLevel'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassLevel'
+          description: ''
+    patch:
+      operationId: school_class_level_partial_update
+      description: Partially update an existing class level.
+      summary: Partially Update Class Level
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this class level.
+        required: true
+      tags:
+      - Class Levels
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClassLevel'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassLevel'
+          description: ''
+  /school/section/:
+    get:
+      operationId: school_section_list
+      description: Retrieve a list of school sections.
+      summary: List Sections
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Sections
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSectionList'
+          description: ''
+    post:
+      operationId: school_section_create
+      description: Create a new school section.
+      summary: Create Section
+      tags:
+      - Sections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Section'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Section'
+          description: ''
+  /school/section/{uuid}/:
+    get:
+      operationId: school_section_retrieve
+      description: Retrieve details of a specific school section.
+      summary: Retrieve Section
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this sections.
+        required: true
+      tags:
+      - Sections
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Section'
+          description: ''
+    put:
+      operationId: school_section_update
+      description: Update an existing school section.
+      summary: Update Section
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this sections.
+        required: true
+      tags:
+      - Sections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Section'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Section'
+          description: ''
+    patch:
+      operationId: school_section_partial_update
+      description: Partially update an existing school section.
+      summary: Partially Update Section
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this sections.
+        required: true
+      tags:
+      - Sections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSection'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Section'
+          description: ''
+  /school/student-class/:
+    get:
+      operationId: school_student_class_list
+      description: Retrieve a list of student classes.
+      summary: List Student Classes
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Student Classes
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudentClassListList'
+          description: ''
+    post:
+      operationId: school_student_class_create
+      description: Create a new student class.
+      summary: Create Student Class
+      tags:
+      - Student Classes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentClass'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentClass'
+          description: ''
+  /school/student-class/{uuid}/:
+    get:
+      operationId: school_student_class_retrieve
+      description: Retrieve details of a specific student class.
+      summary: Retrieve Student Class
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student class.
+        required: true
+      tags:
+      - Student Classes
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentClassList'
+          description: ''
+    put:
+      operationId: school_student_class_update
+      description: Update an existing student class.
+      summary: Update Student Class
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student class.
+        required: true
+      tags:
+      - Student Classes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentClass'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentClass'
+          description: ''
+    patch:
+      operationId: school_student_class_partial_update
+      description: Partially update an existing student class.
+      summary: Partially Update Student Class
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student class.
+        required: true
+      tags:
+      - Student Classes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentClass'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentClass'
+          description: ''
+  /school/subject/:
+    get:
+      operationId: school_subject_list
+      description: Retrieve a list of school subjects with filtering, searching, and
+        ordering support.
+      summary: List Subjects
+      parameters:
+      - in: query
+        name: code
+        schema:
+          type: string
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: name__iexact
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Subjects
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubjectList'
+          description: ''
+    post:
+      operationId: school_subject_create
+      description: Create a new school subject.
+      summary: Create Subject
+      tags:
+      - Subjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subject'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+          description: ''
+  /school/subject/{uuid}/:
+    get:
+      operationId: school_subject_retrieve
+      description: Retrieve details of a specific school subject.
+      summary: Retrieve Subject
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this subject.
+        required: true
+      tags:
+      - Subjects
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+          description: ''
+    put:
+      operationId: school_subject_update
+      description: Update an existing school subject.
+      summary: Update Subject
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this subject.
+        required: true
+      tags:
+      - Subjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subject'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+          description: ''
+    patch:
+      operationId: school_subject_partial_update
+      description: Partially update an existing school subject.
+      summary: Partially Update Subject
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this subject.
+        required: true
+      tags:
+      - Subjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSubject'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+          description: ''
+  /sentry/webhook/:
+    post:
+      operationId: sentry_webhook_create
+      description: Receive error event notifications from Sentry through a webhook.
+        The webhook validates the Sentry authorization header and processes only newly
+        created error events. Relevant error information such as level, project, environment,
+        transaction, and event ID is extracted and forwarded to the configured Telegram
+        notification service.
+      summary: Handle Sentry Error Webhook
+      tags:
+      - Integrations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+      security:
+      - {}
+      responses:
+        '200':
+          description: Sentry error event received and processed successfully.
+        '400':
+          description: Invalid or missing authorization, or the request contains invalid
+            JSON data.
+  /students/student-profile/:
+    get:
+      operationId: students_student_profile_list
+      description: Retrieve a list of student profiles with support for filtering,
+        searching, and ordering.
+      summary: List Student Profiles
+      parameters:
+      - in: query
+        name: class_level
+        schema:
+          type: string
+        description: Class level
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: per_page
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: student_class
+        schema:
+          type: string
+        description: Student Class
+      tags:
+      - Student Profile & Academic
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudentProfileList'
+          description: ''
+  /students/student-profile/{uuid}/:
+    get:
+      operationId: students_student_profile_retrieve
+      description: Retrieve details of a specific student profile.
+      summary: Retrieve Student Profile
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student profile.
+        required: true
+      tags:
+      - Student Profile & Academic
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentProfile'
+          description: ''
+    put:
+      operationId: students_student_profile_update
+      description: Update an existing student profile.
+      summary: Update Student Profile
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student profile.
+        required: true
+      tags:
+      - Student Profile & Academic
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentProfile'
+        required: true
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentProfile'
+          description: ''
+    patch:
+      operationId: students_student_profile_partial_update
+      description: Partially update an existing student profile.
+      summary: Partially Update Student Profile
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this student profile.
+        required: true
+      tags:
+      - Student Profile & Academic
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentProfile'
+      security:
+      - CookieJWTAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentProfile'
+          description: ''
+components:
+  schemas:
+    ActionEnum:
+      enum:
+      - CREATE
+      - UPDATE
+      - DELETE
+      type: string
+      description: |-
+        * `CREATE` - Create
+        * `UPDATE` - Update
+        * `DELETE` - Delete
+    AdminContactInfoGet:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        teacher:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        admin:
+          type: string
+          format: uuid
+      required:
+      - admin
+      - created_at
+      - teacher
+      - updated_at
+      - uuid
+    AdminContactInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        admin:
+          type: string
+          format: uuid
+          readOnly: true
+      required:
+      - admin
+      - created_at
+      - updated_at
+      - uuid
+    AuditLog:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        actor:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        action:
+          $ref: '#/components/schemas/ActionEnum'
+        object_id:
+          type: string
+          format: uuid
+        before:
+          nullable: true
+        after:
+          nullable: true
+        ip_address:
+          type: string
+          nullable: true
+        user_agent:
+          type: string
+          nullable: true
+        model_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        description:
+          type: string
+        content_type:
+          type: integer
+      required:
+      - action
+      - actor
+      - content_type
+      - created_at
+      - object_id
+      - updated_at
+      - uuid
+    BlankEnum:
+      enum:
+      - ''
+    BloodGroupEnum:
+      enum:
+      - A+
+      - A-
+      - B+
+      - B-
+      - O+
+      - O-
+      - AB+
+      - AB-
+      type: string
+      description: |-
+        * `A+` - A+
+        * `A-` - A-
+        * `B+` - B+
+        * `B-` - B-
+        * `O+` - O+
+        * `O-` - O-
+        * `AB+` - AB+
+        * `AB-` - AB-
+    ChangePassword:
+      type: object
+      properties:
+        old_password:
+          type: string
+          maxLength: 15
+          minLength: 7
+        new_password:
+          type: string
+          maxLength: 15
+          minLength: 7
+      required:
+      - new_password
+      - old_password
+    ClassLevel:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          $ref: '#/components/schemas/Name229Enum'
+        monthly_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        subjects:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - created_at
+      - monthly_fee
+      - name
+      - subjects
+      - updated_at
+      - uuid
+    ClassLevelMinimal:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          $ref: '#/components/schemas/Name229Enum'
+      required:
+      - name
+      - uuid
+    CustomUserCreate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        role:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        student_class:
+          type: string
+          format: uuid
+        position:
+          $ref: '#/components/schemas/PositionEnum'
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 15
+          minLength: 5
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+      - uuid
+    CustomUserForStaffView:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        profile:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        role:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        is_active:
+          type: boolean
+        is_verified:
+          type: boolean
+      required:
+      - created_at
+      - email
+      - first_name
+      - last_name
+      - profile
+      - updated_at
+      - uuid
+    CustomUserForStudentView:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        profile:
+          allOf:
+          - $ref: '#/components/schemas/StudentProfileResponse'
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        role:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        is_active:
+          type: boolean
+        is_verified:
+          type: boolean
+      required:
+      - created_at
+      - email
+      - first_name
+      - last_name
+      - profile
+      - updated_at
+      - uuid
+    CustomUserForSuperUserAndAdminView:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        profile:
+          type: string
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        role:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        is_active:
+          type: boolean
+        is_verified:
+          type: boolean
+      required:
+      - created_at
+      - email
+      - first_name
+      - last_name
+      - profile
+      - updated_at
+      - uuid
+    CustomUserForTeacherView:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        profile:
+          allOf:
+          - $ref: '#/components/schemas/TeacherStudentProfileResponse'
+          readOnly: true
+        role:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        is_verified:
+          type: boolean
+      required:
+      - email
+      - first_name
+      - last_name
+      - profile
+      - uuid
+    CustomUserUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        is_verified:
+          type: boolean
+      required:
+      - first_name
+      - last_name
+    Exam:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/ExamStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        year:
+          type: integer
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        is_active:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+          maxLength: 2000
+      required:
+      - created_at
+      - end_date
+      - name
+      - start_date
+      - updated_at
+      - uuid
+      - year
+    ExamCandidate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        student:
+          type: string
+          readOnly: true
+        student_class:
+          type: string
+          readOnly: true
+        start_year:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        end_year:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        roll_number:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+      required:
+      - student
+      - student_class
+      - uuid
+    ExamClassRead:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        exam:
+          type: string
+          readOnly: true
+        student_class:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - exam
+      - student_class
+      - updated_at
+      - uuid
+    ExamClassWrite:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        exam:
+          type: string
+          format: uuid
+        student_class:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - exam
+      - student_class
+      - updated_at
+      - uuid
+    ExamStatusEnum:
+      enum:
+      - draft
+      - ongoing
+      - finished
+      - published
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `ongoing` - Ongoing
+        * `finished` - Finished
+        * `published` - Published
+    ExamSubjectRead:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        exam_class:
+          type: string
+          readOnly: true
+        subject:
+          type: string
+          readOnly: true
+        full_mark:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        pass_mark:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        exam_start:
+          type: string
+          format: date-time
+        exam_end:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - exam_class
+      - exam_end
+      - exam_start
+      - full_mark
+      - pass_mark
+      - subject
+      - updated_at
+      - uuid
+    ExamSubjectWrite:
+      type: object
+      properties:
+        exam_class:
+          type: string
+          format: uuid
+        subject:
+          type: string
+          format: uuid
+        full_mark:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        pass_mark:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        exam_start:
+          type: string
+          format: date-time
+        exam_end:
+          type: string
+          format: date-time
+      required:
+      - exam_class
+      - exam_end
+      - exam_start
+      - full_mark
+      - pass_mark
+      - subject
+    FeePaymentCU:
+      type: object
+      properties:
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        month:
+          allOf:
+          - $ref: '#/components/schemas/MonthEnum'
+          minimum: 0
+          maximum: 32767
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        status:
+          $ref: '#/components/schemas/Status14bEnum'
+        student:
+          type: string
+          format: uuid
+        student_class:
+          type: string
+          format: uuid
+      required:
+      - amount
+      - month
+      - payment_method
+      - student
+      - student_class
+      - year
+    FeePaymentGet:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        student_class:
+          type: string
+          readOnly: true
+        student:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        month:
+          allOf:
+          - $ref: '#/components/schemas/MonthEnum'
+          minimum: 0
+          maximum: 32767
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        status:
+          $ref: '#/components/schemas/Status14bEnum'
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        stripe_session_id:
+          type: string
+          nullable: true
+          maxLength: 255
+        stripe_payment_intent:
+          type: string
+          nullable: true
+          maxLength: 255
+      required:
+      - amount
+      - created_at
+      - month
+      - payment_method
+      - student
+      - student_class
+      - updated_at
+      - uuid
+      - year
+    GenderEnum:
+      enum:
+      - F
+      - M
+      - O
+      type: string
+      description: |-
+        * `F` - Female
+        * `M` - Male
+        * `O` - Other
+    GetAccessTokenResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+    LoginUser:
+      type: object
+      description: Simple login serializer — email normalized here as well.
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 155
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+          minLength: 8
+      required:
+      - email
+      - password
+    MonthEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      type: integer
+      description: |-
+        * `1` - January
+        * `2` - February
+        * `3` - March
+        * `4` - April
+        * `5` - May
+        * `6` - June
+        * `7` - July
+        * `8` - August
+        * `9` - September
+        * `10` - October
+        * `11` - November
+        * `12` - December
+    Name229Enum:
+      enum:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
+      type: string
+      description: |-
+        * `1` - One
+        * `2` - Two
+        * `3` - Three
+        * `4` - Four
+        * `5` - Five
+        * `6` - Six
+        * `7` - Seven
+        * `8` - Eight
+        * `9` - Nine
+        * `10` - Ten
+    Name601Enum:
+      enum:
+      - manager
+      - principal
+      - vice_principal
+      - head_clerk
+      - accounts
+      - registrar
+      - it_officer
+      - librarian
+      - cleaner
+      - guard
+      - driver
+      - peon
+      type: string
+      description: |-
+        * `manager` - Manager
+        * `principal` - Principal
+        * `vice_principal` - Vice Principal
+        * `head_clerk` - Head Clerk
+        * `accounts` - Accounts Officer
+        * `registrar` - Registrar
+        * `it_officer` - IT Officer
+        * `librarian` - Librarian
+        * `cleaner` - Cleaner
+        * `guard` - Guard
+        * `driver` - Driver
+        * `peon` - Peon
+    NullEnum:
+      enum:
+      - null
+    PaginatedAdminContactInfoGetList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminContactInfoGet'
+    PaginatedAuditLogList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLog'
+    PaginatedClassLevelList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassLevel'
+    PaginatedExamClassReadList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExamClassRead'
+    PaginatedExamList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exam'
+    PaginatedExamSubjectReadList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExamSubjectRead'
+    PaginatedFeePaymentGetList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeePaymentGet'
+    PaginatedSectionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Section'
+    PaginatedStaffContactInfoGetList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffContactInfoGet'
+    PaginatedStaffPositionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffPosition'
+    PaginatedStudentAcademicInfoGETList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentAcademicInfoGET'
+    PaginatedStudentClassListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentClassList'
+    PaginatedStudentContactInfoGetList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentContactInfoGet'
+    PaginatedStudentHealthInfoGetList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentHealthInfoGet'
+    PaginatedStudentMarkReadList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentMarkRead'
+    PaginatedStudentParentsInfoGetList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentParentsInfoGet'
+    PaginatedStudentProfileList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentProfile'
+    PaginatedSubjectList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subject'
+    PaginatedTeacherAssignmentListRetrieveList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeacherAssignmentListRetrieve'
+    PaginatedTeacherContactInfoGetList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeacherContactInfoGet'
+    PaginatedTeacherProfessionalInfoGetList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeacherProfessionalInfoGet'
+    PaginatedUserResponseByRoleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponseByRole'
+    PatchedAdminContactInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        admin:
+          type: string
+          format: uuid
+          readOnly: true
+    PatchedClassLevel:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          $ref: '#/components/schemas/Name229Enum'
+        monthly_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        subjects:
+          type: array
+          items:
+            type: string
+            format: uuid
+    PatchedCustomUserUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        is_verified:
+          type: boolean
+    PatchedExam:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/ExamStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        year:
+          type: integer
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        is_active:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+          maxLength: 2000
+    PatchedExamClassWrite:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        exam:
+          type: string
+          format: uuid
+        student_class:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedExamSubjectWrite:
+      type: object
+      properties:
+        exam_class:
+          type: string
+          format: uuid
+        subject:
+          type: string
+          format: uuid
+        full_mark:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        pass_mark:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        exam_start:
+          type: string
+          format: date-time
+        exam_end:
+          type: string
+          format: date-time
+    PatchedFeePaymentCU:
+      type: object
+      properties:
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        month:
+          allOf:
+          - $ref: '#/components/schemas/MonthEnum'
+          minimum: 0
+          maximum: 32767
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        status:
+          $ref: '#/components/schemas/Status14bEnum'
+        student:
+          type: string
+          format: uuid
+        student_class:
+          type: string
+          format: uuid
+    PatchedSection:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        section:
+          $ref: '#/components/schemas/SectionEnum'
+    PatchedStaffContactInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        staff:
+          type: string
+          format: uuid
+          readOnly: true
+    PatchedStudentAcademicInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        start_year:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        end_year:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        roll_number:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        admission_date:
+          type: string
+          format: date
+          nullable: true
+        previous_school:
+          type: string
+          nullable: true
+          maxLength: 255
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+        student_class:
+          type: string
+          format: uuid
+          nullable: true
+    PatchedStudentClass:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        student_class_level:
+          type: string
+          format: uuid
+        section:
+          type: string
+          format: uuid
+    PatchedStudentContactInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+    PatchedStudentHealthInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        father_name:
+          type: string
+          nullable: true
+          maxLength: 200
+        father_phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        father_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 155
+        mother_name:
+          type: string
+          nullable: true
+          maxLength: 200
+        mother_phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        mother_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 155
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+    PatchedStudentMark:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        marks_obtained:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        is_absent:
+          type: boolean
+        exam_subject:
+          type: string
+          format: uuid
+        student:
+          type: string
+          format: uuid
+    PatchedStudentParentsInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        father_name:
+          type: string
+          nullable: true
+          maxLength: 200
+        father_phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        father_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 155
+        mother_name:
+          type: string
+          nullable: true
+          maxLength: 200
+        mother_phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        mother_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 155
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+    PatchedStudentProfile:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        user:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+    PatchedSubject:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        code:
+          type: string
+          maxLength: 20
+        description:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+    PatchedTeacherAssignmentCreateUpdate:
+      type: object
+      properties:
+        teacher:
+          type: string
+          format: uuid
+        student_class:
+          type: string
+          format: uuid
+        subject:
+          type: string
+          format: uuid
+    PatchedTeacherContactInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        teacher:
+          type: string
+          format: uuid
+          readOnly: true
+    PatchedTeacherProfessionalInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        teacher:
+          type: string
+          format: uuid
+          readOnly: true
+    PaymentMethodEnum:
+      enum:
+      - stripe
+      - cash
+      type: string
+      description: |-
+        * `stripe` - Stripe
+        * `cash` - Cash
+    PositionEnum:
+      enum:
+      - manager
+      - principal
+      - vice_principal
+      - head_clerk
+      - accounts
+      - registrar
+      - it_officer
+      - librarian
+      - cleaner
+      - guard
+      - driver
+      - peon
+      type: string
+      description: |-
+        * `manager` - Manager
+        * `principal` - Principal
+        * `vice_principal` - Vice Principal
+        * `head_clerk` - Head Clerk
+        * `accounts` - Accounts Officer
+        * `registrar` - Registrar
+        * `it_officer` - IT Officer
+        * `librarian` - Librarian
+        * `cleaner` - Cleaner
+        * `guard` - Guard
+        * `driver` - Driver
+        * `peon` - Peon
+    ResendVerifyEmail:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    ResetPassword:
+      type: object
+      properties:
+        password:
+          type: string
+          maxLength: 15
+          minLength: 7
+      required:
+      - password
+    RoleEnum:
+      enum:
+      - admin
+      - staff
+      - teacher
+      - student
+      type: string
+      description: |-
+        * `admin` - Admin
+        * `staff` - Staff
+        * `teacher` - Teacher
+        * `student` - Student
+    SchoolFee:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          $ref: '#/components/schemas/Name229Enum'
+        monthly_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+      required:
+      - monthly_fee
+      - name
+      - uuid
+    Section:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        section:
+          $ref: '#/components/schemas/SectionEnum'
+      required:
+      - section
+      - uuid
+    SectionEnum:
+      enum:
+      - A
+      - B
+      - C
+      - D
+      - E
+      - F
+      - G
+      - H
+      - I
+      type: string
+      description: |-
+        * `A` - Section A
+        * `B` - Section B
+        * `C` - Section C
+        * `D` - Section D
+        * `E` - Section E
+        * `F` - Section F
+        * `G` - Section G
+        * `H` - Section H
+        * `I` - Section I
+    StaffContactInfoGet:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        teacher:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        staff:
+          type: string
+          format: uuid
+      required:
+      - created_at
+      - staff
+      - teacher
+      - updated_at
+      - uuid
+    StaffContactInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        staff:
+          type: string
+          format: uuid
+          readOnly: true
+      required:
+      - created_at
+      - staff
+      - updated_at
+      - uuid
+    StaffPosition:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          $ref: '#/components/schemas/Name601Enum'
+        description:
+          type: string
+          nullable: true
+          maxLength: 500
+      required:
+      - created_at
+      - name
+      - updated_at
+      - uuid
+    Status14bEnum:
+      enum:
+      - pending
+      - success
+      - failed
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `success` - Success
+        * `failed` - Failed
+    StudentAcademicInfoGET:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        student:
+          type: string
+          readOnly: true
+        student_class:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        start_year:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        end_year:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        roll_number:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        admission_date:
+          type: string
+          format: date
+          nullable: true
+        previous_school:
+          type: string
+          nullable: true
+          maxLength: 255
+      required:
+      - created_at
+      - student
+      - student_class
+      - updated_at
+      - uuid
+    StudentAcademicInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        start_year:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        end_year:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        roll_number:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        admission_date:
+          type: string
+          format: date
+          nullable: true
+        previous_school:
+          type: string
+          nullable: true
+          maxLength: 255
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+        student_class:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - created_at
+      - student
+      - updated_at
+      - uuid
+    StudentClass:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        student_class_level:
+          type: string
+          format: uuid
+        section:
+          type: string
+          format: uuid
+      required:
+      - created_at
+      - section
+      - student_class_level
+      - updated_at
+      - uuid
+    StudentClassList:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        student_class_level:
+          allOf:
+          - $ref: '#/components/schemas/ClassLevelMinimal'
+          readOnly: true
+        section:
+          allOf:
+          - $ref: '#/components/schemas/Section'
+          readOnly: true
+      required:
+      - created_at
+      - section
+      - student_class_level
+      - updated_at
+      - uuid
+    StudentContactInfoGet:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        student:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+      required:
+      - created_at
+      - student
+      - updated_at
+      - uuid
+    StudentContactInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+      required:
+      - created_at
+      - student
+      - updated_at
+      - uuid
+    StudentFeeCheckout:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 155
+        quantity:
+          type: integer
+          maximum: 12
+          minimum: 1
+      required:
+      - email
+      - quantity
+    StudentHealthInfoGet:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        student:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        blood_group:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/BloodGroupEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        height_cm:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+        allergies: {}
+        medical_conditions: {}
+        medications: {}
+        emergency_contact_name:
+          type: string
+          nullable: true
+          maxLength: 100
+        emergency_contact_phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        emergency_contact_relation:
+          type: string
+          nullable: true
+          maxLength: 50
+      required:
+      - created_at
+      - student
+      - updated_at
+      - uuid
+    StudentHealthInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        father_name:
+          type: string
+          nullable: true
+          maxLength: 200
+        father_phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        father_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 155
+        mother_name:
+          type: string
+          nullable: true
+          maxLength: 200
+        mother_phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        mother_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 155
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+      required:
+      - created_at
+      - student
+      - updated_at
+      - uuid
+    StudentMark:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        marks_obtained:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        is_absent:
+          type: boolean
+        exam_subject:
+          type: string
+          format: uuid
+        student:
+          type: string
+          format: uuid
+      required:
+      - created_at
+      - exam_subject
+      - marks_obtained
+      - student
+      - updated_at
+      - uuid
+    StudentMarkRead:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        student:
+          type: string
+          readOnly: true
+        exam_subject:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        marks_obtained:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        is_absent:
+          type: boolean
+      required:
+      - created_at
+      - exam_subject
+      - marks_obtained
+      - student
+      - updated_at
+      - uuid
+    StudentParentsInfoGet:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        student:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        father_name:
+          type: string
+          nullable: true
+          maxLength: 200
+        father_phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        father_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 155
+        mother_name:
+          type: string
+          nullable: true
+          maxLength: 200
+        mother_phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        mother_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 155
+      required:
+      - created_at
+      - student
+      - updated_at
+      - uuid
+    StudentParentsInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        father_name:
+          type: string
+          nullable: true
+          maxLength: 200
+        father_phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        father_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 155
+        mother_name:
+          type: string
+          nullable: true
+          maxLength: 200
+        mother_phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        mother_email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 155
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+      required:
+      - created_at
+      - student
+      - updated_at
+      - uuid
+    StudentProfile:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        user:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - created_at
+      - gender
+      - updated_at
+      - user
+      - uuid
+    StudentProfileResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+      required:
+      - uuid
+    Subject:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        code:
+          type: string
+          maxLength: 20
+        description:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - code
+      - created_at
+      - name
+      - updated_at
+      - uuid
+    TeacherAssignmentCreateUpdate:
+      type: object
+      properties:
+        teacher:
+          type: string
+          format: uuid
+        student_class:
+          type: string
+          format: uuid
+        subject:
+          type: string
+          format: uuid
+      required:
+      - student_class
+      - subject
+      - teacher
+    TeacherAssignmentListRetrieve:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        teacher:
+          type: string
+          readOnly: true
+        student_class:
+          type: string
+          readOnly: true
+        subject:
+          type: string
+          readOnly: true
+      required:
+      - student_class
+      - subject
+      - teacher
+      - uuid
+    TeacherContactInfoGet:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        teacher:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+      required:
+      - created_at
+      - teacher
+      - updated_at
+      - uuid
+    TeacherContactInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        teacher:
+          type: string
+          format: uuid
+          readOnly: true
+      required:
+      - created_at
+      - teacher
+      - updated_at
+      - uuid
+    TeacherProfessionalInfoGet:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        teacher:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        qualification:
+          type: string
+          nullable: true
+          maxLength: 255
+        years_of_experience:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        subjects_specialization:
+          type: string
+          nullable: true
+          maxLength: 255
+        education_qualification:
+          type: string
+          nullable: true
+          maxLength: 500
+      required:
+      - created_at
+      - teacher
+      - updated_at
+      - uuid
+    TeacherProfessionalInfoUpdate:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 25
+        address:
+          type: string
+          nullable: true
+          maxLength: 1000
+        emergency_contact:
+          type: string
+          nullable: true
+          maxLength: 25
+        teacher:
+          type: string
+          format: uuid
+          readOnly: true
+      required:
+      - created_at
+      - teacher
+      - updated_at
+      - uuid
+    TeacherStudentProfileResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+      required:
+      - uuid
+    UserProfile:
+      type: object
+      properties:
+        file:
+          type: string
+          format: uri
+      required:
+      - file
+    UserResponseByRole:
+      oneOf:
+      - $ref: '#/components/schemas/CustomUserForSuperUserAndAdminView'
+      - $ref: '#/components/schemas/CustomUserForStaffView'
+      - $ref: '#/components/schemas/CustomUserForTeacherView'
+      - $ref: '#/components/schemas/CustomUserForStudentView'
+  securitySchemes:
+    CSRFToken:
+      type: apiKey
+      in: header
+      name: X-CSRFToken
+    CookieJWTAuth:
+      type: apiKey
+      in: cookie
+      name: access_token
+tags:
+- name: Authentication
+  description: APIs for user authentication, including login, logout, token management,
+    CSRF protection, password recovery, and authentication-related operations.
+- name: Accounts
+  description: APIs for managing user accounts, including user information, account
+    updates, password changes, and account-related operations.
+- name: Profile
+  description: APIs for managing user profile information and profile pictures, including
+    secure access to protected profile files.
+- name: Student Profile & Academic
+  description: APIs for managing student profile and academic information, including
+    student identity, academic details, class-related information, and other core
+    student records.
+- name: Student Additional Information
+  description: APIs for managing additional student information, including parent
+    or guardian details, contact information, and health-related records.
+- name: Teacher Assignments
+  description: APIs for managing teacher assignments, including the relationship between
+    teachers, student classes, and subjects.
+- name: Teacher Related
+  description: APIs for managing teacher-related information, profiles, assignments,
+    and other operations associated with teachers.
+- name: Staff Related
+  description: APIs for managing staff-related information, profiles, positions, and
+    other operations associated with school staff.
+- name: Admin Related
+  description: APIs for administrator-related operations, including administrative
+    information and privileged school management functionality.
+- name: Exam Management
+  description: APIs for creating and managing exams, including exam information, academic
+    year, status, schedule, activation, and exam lifecycle operations.
+- name: Exam Classes
+  description: APIs for managing classes associated with exams, including the student
+    classes participating in specific exams.
+- name: Exam Subjects
+  description: APIs for managing subjects included in exams, including exam subject
+    configuration, full marks, pass marks, and subject-specific exam settings.
+- name: Exam Candidates & Marks
+  description: APIs for managing exam candidates and student marks, including candidate
+    status, mark entry, completed candidates, and exam result-related data.
+- name: Payments
+  description: APIs for managing student school fee payment records, including payment
+    creation, retrieval, updates, and payment-related administrative operations.
+- name: Payment Checkout
+  description: Public APIs for viewing available school fee plans and creating payment
+    checkout sessions for students through the payment system.
+- name: Payment Callback
+  description: APIs for handling payment callback flows, including successful and
+    cancelled payment responses after the checkout process.
+- name: Stripe Webhook
+  description: API for securely receiving and processing Stripe webhook events, including
+    verification of webhook signatures and completed checkout sessions.
+- name: Subjects
+  description: APIs for managing school subjects, including subject names, codes,
+    descriptions, active status, and subject-related operations.
+- name: Class Levels
+  description: APIs for managing school class levels, including monthly fees and the
+    subjects associated with each class level.
+- name: Sections
+  description: APIs for managing school sections used to organize students within
+    classes and maintain section-related information.
+- name: Student Classes
+  description: APIs for managing student classes by associating class levels with
+    their corresponding sections and maintaining class-related information.
+- name: Integrations
+  description: APIs for integrating Campus Secure with external services and platforms,
+    including error monitoring, notifications, webhooks, and other third-party system
+    integrations.
+- name: Audit Logs
+  description: APIs for tracking and reviewing system activity, including user actions,
+    created records, updated records, deleted records, and other auditable changes.
+- name: Test And Error
+  description: Test and development APIs for validating application behavior, including
+    error responses, intentional delays, slow database queries, and other test scenarios.

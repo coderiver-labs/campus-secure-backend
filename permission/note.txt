@@ -1,0 +1,36 @@
+
+
+akhne permission kajj korse :
+
+    permission_classes = [
+        user_permission,
+        admin_permission,
+        etc..
+    ]
+
+kintu protita permission ar vitore ki kora jabena seta agge bola asse r last permission a giye "return False"
+kora hosse, tohh kono aktai jodi last a "return False" ata vule jawa jai taile kintu akta securaty holo theke jabe,
+
+koroniyo: joto gulapermission class likhbo setake akta function ar moddhe rakhbo r sei function kei 1ta permission class ar moddhe rakhbo 
+    ar pore sei permission class ar moddhe default akta permission class thakbe jekhane "return False" thakbe
+    tahole r jekono permission class lekhar shomoy last permission class lekhar shomoy "return False" korte vule gelew default permission "return False" kore dibe
+
+
+ai message ta hoyto pore porle ami nijew bujbona ashole problem ta kothai kintu tokhon amake ata vabte hobe je 
+ami bortomane ki korka jabena setarupore condiction laggassi, kintu ki kora jabena ata tohh shob ami bolte parbona vul manus ar hoy,
+tai shob condication ar ses a "return False" kortei hobe. 
+    
+    example : akhne ami cai admin sara jeno kew ai opration na korte pare
+    # amar bortoman je permission ase aita aivabe kajj korse
+
+    if user.role == "student":
+        return False
+    if user.role == "teacher":
+        return False
+
+    return True
+
+    thik aivabe amar permission engin banano , tohh akhne jodi "user.role == "staff" " taile tohh securaty ses, thik ai kajj tai hosse 
+    tai amake akta default permission class banate hobe ja shob gula permission class check korar pore automatic default permission class taw call hobe jekhane thakbe "return False"
+
+    

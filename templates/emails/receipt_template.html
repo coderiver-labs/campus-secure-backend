@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 20px; color: #333; background-color: #f9f9f9; }
+        .receipt-card { max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .header { text-align: center; border-bottom: 2px solid #0056b3; padding-bottom: 15px; margin-bottom: 20px; }
+        .header h2 { margin: 0; color: #0056b3; font-size: 24px; }
+        .header p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
+        .details { margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
+        .details table { width: 100%; border: none; }
+        .details td { padding: 4px 0; border: none; }
+        table.data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        table.data-table th, table.data-table td { border: 1px solid #e0e0e0; padding: 10px; text-align: left; font-size: 14px; }
+        table.data-table th { background-color: #f4f6f8; color: #333; font-weight: bold; }
+        .total-section { text-align: right; margin-top: 20px; padding-top: 10px; border-top: 2px solid #eee; }
+        .total-section h3 { margin: 0; color: #0056b3; font-size: 18px; }
+        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+    <div class="receipt-card">
+        <div class="header">
+            <h2>School Management System</h2>
+            <p>Official Fee Payment Receipt</p>
+        </div>
+
+        <div class="details">
+            <table>
+                <tr>
+                    <td><strong>Student Name:</strong> {{ student.user.get_full_name }}</td>
+                    <td style="text-align: right;"><strong>Invoice No:</strong> {{ invoice_no }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Class:</strong> {{ payments.0.student_class.name }}</td>
+                    <td style="text-align: right;"><strong>Date:</strong> {{ paid_at|date:"d M Y, h:i A" }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Year</th>
+                    <th style="text-align: right;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <!-- get_month_display দিয়ে সরাসরি মাসের নাম ("January", "February") চলে আসবে -->
+                    <td>{{ payment.get_month_display }}</td>
+                    <td>{{ payment.year }}</td>
+                    <td style="text-align: right;">{{ payment.amount }} $</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <h3>Total Paid: {{ total_amount }} $</h3>
+        </div>
+
+        <div class="footer">
+            <p>This is an automated receipt. If you have any questions, please contact support.</p>
+        </div>
+    </div>
+</body>
+</html>
